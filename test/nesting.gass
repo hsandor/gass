@@ -20,7 +20,11 @@ nav
 		display: inline-block
 		background-color:$col-sky
 		everything: $something
-		apple:$apple
+		apple:$apple	
+	
+	&:hover,
+	&:active
+		color: red
 
 	// ez bizony egy jo kis komment lesz
 		ami lehet tobb soros is

@@ -15,23 +15,25 @@ const (
 )
 
 type Line struct {
-	Type       int
-	Parent     *Line
-	Data       string
-	Level      int
-	Properties []*Line
-	Children   []*Line
-	Variables  map[string]string
+	Type         int
+	Parent       *Line
+	Data         string
+	Level        int
+	Properties   []*Line
+	Children     []*Line
+	Variables    map[string]string
+	HasAmpersand bool
 }
 
 func CalcType(s string) int {
 	ss := strings.TrimSpace(s)
+	hasAmp := strings.Contains(ss, "&")
 
 	if strings.HasPrefix(ss, "//") || strings.HasPrefix(ss, "/*") {
 		return COMMENT
-	} else if strings.HasPrefix(ss, "$") && strings.Contains(ss, ":") {
+	} else if strings.HasPrefix(ss, "$") && strings.Contains(ss, ":") && !hasAmp {
 		return VARIABLE
-	} else if strings.Contains(ss, ":") {
+	} else if strings.Contains(ss, ":") && !hasAmp {
 		return PROPERTY
 	} else {
 		return ELEMENT
@@ -62,10 +64,16 @@ func FormatOutput(l *Line, p string) string {
 	res := ""
 	if l != nil {
 		if len(l.Data) > 0 && len(l.Properties) > 0 {
-			res += fmt.Sprintf("%s {\n", FormatChain(l))
+			if l.HasAmpersand {
+				res += fmt.Sprintf("%s {\n", l.Data)
+			} else {
+				res += fmt.Sprintf("%s {\n", FormatChain(l))
+			}
+
 			for _, p := range l.Properties {
 				res += "  " + p.Data + ";\n"
 			}
+
 			res += "}\n"
 		} else {
 			for _, c := range l.Children {
@@ -123,6 +131,26 @@ func SetProp(p *Line, l *Line) {
 	}
 }
 
+func ReplaceAmpersand(lin *Line) {
+	hasAmp := strings.Contains(lin.Data, "&")
+
+	lin.HasAmpersand = false
+
+	if lin.Level > 0 {
+		if lin.Parent != nil && hasAmp {
+			lin.HasAmpersand = true
+			par := lin.Parent.Data
+
+			lin.Data = strings.Replace(lin.Data, "&", par, -1)
+			// fmt.Println(par)
+		}
+	} else {
+		if hasAmp {
+			// throw error
+		}
+	}
+}
+
 func CompileString(src string) string {
 	root := NewLine("")
 	last := root
@@ -156,6 +184,9 @@ func CompileString(src string) string {
 
 				parent.Children = append(parent.Children, lin)
 				lin.Parent = parent
+
+				ReplaceAmpersand(lin)
+
 				last = lin
 			} else if lin.Type == VARIABLE {
 				ParseVariable(last, lin.Data)
