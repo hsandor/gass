@@ -63,7 +63,7 @@ func FormatChain(l *Line) string {
 func FormatOutput(l *Line, p string) string {
 	res := ""
 	if l != nil {
-		if len(l.Data) > 0 && len(l.Properties) > 0 {
+		if len(l.Properties) > 0 {
 			if l.HasAmpersand {
 				res += fmt.Sprintf("%s {\n", l.Data)
 			} else {
@@ -75,7 +75,9 @@ func FormatOutput(l *Line, p string) string {
 			}
 
 			res += "}\n"
-		} else {
+		}
+
+		if len(l.Children) > 0 {
 			for _, c := range l.Children {
 				res += FormatOutput(c, p+"  ")
 			}

@@ -1,22 +1,14 @@
 
-$col-black: #012345
-$col-sky: rgb(1,$col-black,2)
-$apple:apple
-
 /* This comment will appear in the CSS output.
   This is nested beneath the comment,
   so it's part of it
 nav
-	$something: anything
 	ul
-		everything: $something
 		margin: 0
 		padding: 0
 		list-style: none
-		background-color: $col-black
 
 	li
-		$apple:pear
 		display: inline-block
 		background-color:$col-sky
 		everything: $something
@@ -26,16 +18,17 @@ nav
 	&:active
 		color: red
 
-	// ez bizony egy jo kis komment lesz
-		ami lehet tobb soros is
+	// this will be a nice multi
+		line comment with indentation
 	a
 		display: block
 		padding: 6px 12px
 		text-decoration: none
-		apple:$apple
+
+		hover
+			color:red
 
 .users #userTab,
 .posts #postTab
   width: 100px
   height: 30px
-  everything: $something
