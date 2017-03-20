@@ -1,0 +1,20 @@
+nav ul {
+  everything: anything;
+  background-color: #012345;
+}
+nav li {
+  background-color:rgb(1,#012345,2);
+  everything: anything;
+  pear:pear;
+}
+nav a {
+  apple:apple;
+}
+.users #userTab {
+  everything: something;
+  background-color: rgb(1,#012345,2);
+}
+.posts #postTab {
+  everything: something;
+  background-color: rgb(1,#012345,2);
+}
