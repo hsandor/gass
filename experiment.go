@@ -21,9 +21,8 @@ type Line struct {
 	Level      int
 	Properties []*Line
 	Children   []*Line
+	Variables  map[string]string
 }
-
-var variables map[string]string
 
 func CalcType(s string) int {
 	ss := strings.TrimSpace(s)
@@ -41,9 +40,10 @@ func CalcType(s string) int {
 
 func NewLine(data string) *Line {
 	return &Line{
-		Data:  strings.TrimSpace(data),
-		Level: calcIndentLevel(data),
-		Type:  CalcType(data),
+		Data:      strings.TrimSpace(data),
+		Level:     calcIndentLevel(data),
+		Type:      CalcType(data),
+		Variables: make(map[string]string),
 	}
 }
 
@@ -76,8 +76,43 @@ func FormatOutput(l *Line, p string) string {
 	return res
 }
 
-func ParseVariable(s string) {
+func InterpolateVariables(l *Line, s string) string {
+	vars := strings.Split(s, "$")
 
+	if len(vars) <= 1 {
+		return s
+	}
+
+	res := ""
+
+	for _, v := range vars {
+		i := strings.IndexAny(v, " /,:.#")
+		if i >= 0 {
+			res += FindVariable(l, v[:i])
+			res += v[i:]
+		} else {
+			res += FindVariable(l, v)
+		}
+	}
+
+	return res
+}
+
+func ParseVariable(l *Line, s string) {
+	s = s[strings.Index(s, "$")+1:]
+	n := strings.TrimSpace(s[:strings.Index(s, ":")])
+	v := strings.TrimSpace(s[strings.Index(s, ":")+1:])
+	l.Variables[n] = InterpolateVariables(l, v)
+}
+
+func FindVariable(l *Line, name string) string {
+	for l != nil {
+		if value, ok := l.Variables[name]; ok {
+			return value
+		}
+		l = l.Parent
+	}
+	return name
 }
 
 func SetProp(p *Line, l *Line) {
@@ -122,8 +157,15 @@ func CompileString(src string) string {
 				parent.Children = append(parent.Children, lin)
 				lin.Parent = parent
 				last = lin
+			} else if lin.Type == VARIABLE {
+				ParseVariable(last, lin.Data)
 			} else {
-				SetProp(last, lin)
+				if last != root {
+					lin.Data = InterpolateVariables(last, lin.Data)
+					SetProp(last, lin)
+				} else {
+					fmt.Println("error: top level property '" + lin.Data + "'")
+				}
 			}
 		}
 	}

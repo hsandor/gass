@@ -1,21 +1,29 @@
 nav ul {
+  everything: anything;
   margin: 0;
   padding: 0;
   list-style: none;
+  background-color: #012345;
 }
 nav li {
   display: inline-block;
+  background-color:rgb(1,#012345,2);
+  everything: anything;
+  pear:pear;
 }
 nav a {
   display: block;
   padding: 6px 12px;
   text-decoration: none;
+  apple:apple;
 }
 .users #userTab {
   width: 100px;
   height: 30px;
+  everything: something;
 }
 .posts #postTab {
   width: 100px;
   height: 30px;
+  everything: something;
 }

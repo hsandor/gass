@@ -1,15 +1,26 @@
 
+$col-black: #012345
+$col-sky: rgb(1,$col-black,2)
+$apple:apple
+
 /* This comment will appear in the CSS output.
   This is nested beneath the comment,
   so it's part of it
 nav
+	$something: anything
 	ul
+		everything: $something
 		margin: 0
 		padding: 0
 		list-style: none
+		background-color: $col-black
 
 	li
+		$apple:pear
 		display: inline-block
+		background-color:$col-sky
+		everything: $something
+		apple:$apple
 
 	// ez bizony egy jo kis komment lesz
 		ami lehet tobb soros is
@@ -17,8 +28,10 @@ nav
 		display: block
 		padding: 6px 12px
 		text-decoration: none
+		apple:$apple
 
 .users #userTab,
 .posts #postTab
   width: 100px
   height: 30px
+  everything: $something
