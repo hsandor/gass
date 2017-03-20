@@ -1,0 +1,24 @@
+
+/* This comment will appear in the CSS output.
+  This is nested beneath the comment,
+  so it's part of it
+nav
+	ul
+		margin: 0
+		padding: 0
+		list-style: none
+
+	li
+		display: inline-block
+
+	// ez bizony egy jo kis komment lesz
+		ami lehet tobb soros is
+	a
+		display: block
+		padding: 6px 12px
+		text-decoration: none
+
+.users #userTab,
+.posts #postTab
+  width: 100px
+  height: 30px
