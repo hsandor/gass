@@ -64,16 +64,10 @@ func FormatOutput(l *Line, p string) string {
 	res := ""
 	if l != nil {
 		if len(l.Properties) > 0 {
-			if l.HasAmpersand {
-				res += fmt.Sprintf("%s {\n", l.Data)
-			} else {
-				res += fmt.Sprintf("%s {\n", FormatChain(l))
-			}
-
+			res += fmt.Sprintf("%s {\n", FormatChain(l))
 			for _, p := range l.Properties {
 				res += "  " + p.Data + ";\n"
 			}
-
 			res += "}\n"
 		}
 
@@ -134,22 +128,14 @@ func SetProp(p *Line, l *Line) {
 }
 
 func ReplaceAmpersand(lin *Line) {
-	hasAmp := strings.Contains(lin.Data, "&")
-
-	lin.HasAmpersand = false
-
-	if lin.Level > 0 {
-		if lin.Parent != nil && hasAmp {
+	if lin.Parent != nil {
+		nd := strings.Replace(lin.Data, "&", lin.Parent.Data, -1)
+		if nd != lin.Data {
 			lin.HasAmpersand = true
-			par := lin.Parent.Data
-
-			lin.Data = strings.Replace(lin.Data, "&", par, -1)
-			// fmt.Println(par)
+			lin.Data = nd
 		}
-	} else {
-		if hasAmp {
-			// throw error
-		}
+	} else if strings.Contains(lin.Data, "&") {
+		fmt.Println("ampersand for top level element error:", lin.Data)
 	}
 }
 
