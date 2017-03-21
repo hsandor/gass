@@ -15,14 +15,13 @@ const (
 )
 
 type Line struct {
-	Type         int
-	Parent       *Line
-	Data         string
-	Level        int
-	Properties   []*Line
-	Children     []*Line
-	Variables    map[string]string
-	HasAmpersand bool
+	Type       int
+	Parent     *Line
+	Data       string
+	Level      int
+	Properties []*Line
+	Children   []*Line
+	Variables  map[string]string
 }
 
 func CalcType(s string) int {
@@ -132,7 +131,6 @@ func ReplaceAmpersand(lin *Line) {
 		nd := strings.Replace(lin.Data, "&", lin.Parent.Data, -1)
 		if nd != lin.Data {
 			lin.Parent = lin.Parent.Parent
-			lin.HasAmpersand = true
 			lin.Data = nd
 		}
 	} else if strings.Contains(lin.Data, "&") {
