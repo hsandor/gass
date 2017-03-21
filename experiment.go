@@ -55,9 +55,7 @@ func FormatChain(l *Line) string {
 		if len(s) > 0 {
 			return s + " " + strings.TrimRight(l.Data, ",")
 		}
-		if !l.HasAmpersand {
-			return strings.TrimRight(l.Data, ",")
-		}
+		return strings.TrimRight(l.Data, ",")
 	}
 	return ""
 }
@@ -122,10 +120,12 @@ func FindVariable(l *Line, name string) string {
 }
 
 func SetProp(p *Line, l *Line) {
+	fmt.Println("setprop for:", p.Data, ", data:", l.Data)
 	p.Properties = append(p.Properties, l)
 
-	for i := len(p.Parent.Children) - 2; i >= 0 && strings.HasSuffix(p.Parent.Children[i].Data, ","); i -= 1 {
+	for i := len(p.Parent.Children) - 2; i >= 0 && strings.HasSuffix(p.Parent.Children[i].Data, ","); i-- {
 		p.Parent.Children[i].Properties = append(p.Parent.Children[i].Properties, l)
+		fmt.Println(p.Parent.Children[i].Data)
 	}
 }
 
@@ -133,8 +133,10 @@ func ReplaceAmpersand(lin *Line) {
 	if lin.Parent != nil {
 		nd := strings.Replace(lin.Data, "&", lin.Parent.Data, -1)
 		if nd != lin.Data {
+			lin.Parent = lin.Parent.Parent
 			lin.HasAmpersand = true
 			lin.Data = nd
+			fmt.Println(lin.Data, ", parent:", lin.Parent.Data)
 		}
 	} else if strings.Contains(lin.Data, "&") {
 		fmt.Println("ampersand for top level element error:", lin.Data)
@@ -172,11 +174,9 @@ func CompileString(src string) string {
 					}
 				}
 
-				parent.Children = append(parent.Children, lin)
 				lin.Parent = parent
-
 				ReplaceAmpersand(lin)
-
+				lin.Parent.Children = append(lin.Parent.Children, lin)
 				last = lin
 			} else if lin.Type == VARIABLE {
 				ParseVariable(last, lin.Data)
@@ -189,6 +189,10 @@ func CompileString(src string) string {
 				}
 			}
 		}
+	}
+
+	for i, c := range root.Children {
+		fmt.Println(i, ":", c.Data)
 	}
 
 	return FormatOutput(root, "")
