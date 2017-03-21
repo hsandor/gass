@@ -55,7 +55,9 @@ func FormatChain(l *Line) string {
 		if len(s) > 0 {
 			return s + " " + strings.TrimRight(l.Data, ",")
 		}
-		return strings.TrimRight(l.Data, ",")
+		if !l.HasAmpersand {
+			return strings.TrimRight(l.Data, ",")
+		}
 	}
 	return ""
 }
