@@ -118,6 +118,7 @@ func FindVariable(l *Line, name string) string {
 	return name
 }
 
+/*
 func SetProp(p *Line, l *Line) {
 	p.Properties = append(p.Properties, l)
 
@@ -125,6 +126,7 @@ func SetProp(p *Line, l *Line) {
 		p.Parent.Children[i].Properties = append(p.Parent.Children[i].Properties, l)
 	}
 }
+*/
 
 func ReplaceAmpersand(lin *Line) {
 	if lin.Parent != nil {
@@ -171,14 +173,20 @@ func CompileString(src string) string {
 
 				lin.Parent = parent
 				ReplaceAmpersand(lin)
-				lin.Parent.Children = append(lin.Parent.Children, lin)
-				last = lin
+
+				if strings.HasSuffix(last.Data, ",") {
+					last.Data = last.Data + " " + lin.Data
+				} else {
+					lin.Parent.Children = append(lin.Parent.Children, lin)
+					last = lin
+				}
 			} else if lin.Type == VARIABLE {
 				ParseVariable(last, lin.Data)
 			} else {
 				if last != root {
 					lin.Data = InterpolateVariables(last, lin.Data)
-					SetProp(last, lin)
+					last.Properties = append(last.Properties, lin)
+					//SetProp(last, lin)
 				} else {
 					fmt.Println("error: top level property '" + lin.Data + "'")
 				}
