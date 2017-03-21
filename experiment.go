@@ -120,12 +120,10 @@ func FindVariable(l *Line, name string) string {
 }
 
 func SetProp(p *Line, l *Line) {
-	fmt.Println("setprop for:", p.Data, ", data:", l.Data)
 	p.Properties = append(p.Properties, l)
 
 	for i := len(p.Parent.Children) - 2; i >= 0 && strings.HasSuffix(p.Parent.Children[i].Data, ","); i-- {
 		p.Parent.Children[i].Properties = append(p.Parent.Children[i].Properties, l)
-		fmt.Println(p.Parent.Children[i].Data)
 	}
 }
 
@@ -136,7 +134,6 @@ func ReplaceAmpersand(lin *Line) {
 			lin.Parent = lin.Parent.Parent
 			lin.HasAmpersand = true
 			lin.Data = nd
-			fmt.Println(lin.Data, ", parent:", lin.Parent.Data)
 		}
 	} else if strings.Contains(lin.Data, "&") {
 		fmt.Println("ampersand for top level element error:", lin.Data)
@@ -189,10 +186,6 @@ func CompileString(src string) string {
 				}
 			}
 		}
-	}
-
-	for i, c := range root.Children {
-		fmt.Println(i, ":", c.Data)
 	}
 
 	return FormatOutput(root, "")
