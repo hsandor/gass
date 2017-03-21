@@ -1,0 +1,28 @@
+
+/* This comment will appear in the CSS output.
+  This is nested beneath the comment,
+  so it's part of it
+nav
+    ul
+        margin: 0
+        padding: 0
+        list-style: none
+
+		button
+			color:red
+
+			hover
+				color:green
+
+    li
+        display: inline-block
+
+    // this will be a nice multi
+        line comment with indentation
+    a
+        display: block
+        text-decoration: none
+
+        hover
+            color:red
+

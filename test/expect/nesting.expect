@@ -1,0 +1,21 @@
+nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+nav ul button {
+  color:red;
+}
+nav ul button hover {
+  color:green;
+}
+nav li {
+  display: inline-block;
+}
+nav a {
+  display: block;
+  text-decoration: none;
+}
+nav a hover {
+  color:red;
+}

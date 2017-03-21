@@ -1,5 +1,6 @@
 package gass
 
+/*
 import (
 	"os"
 	"path/filepath"
@@ -17,3 +18,4 @@ func TestExperiment(t *testing.T) {
 	filepath.Walk("test", processFile)
 	//CompileFile("test/deep.gass")
 }
+*/
