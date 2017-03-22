@@ -1,14 +1,20 @@
 package gass
 
 import (
-	"errors"
 	"io/ioutil"
-	"os"
-	"path/filepath"
-	"strings"
 	"testing"
 )
 
+func TestParser(t *testing.T) {
+	in, err := ioutil.ReadFile("test/parser.gass")
+	if err != nil {
+		t.Error(err)
+	}
+	css, err := ParseString(string(in))
+	ioutil.WriteFile("test/parser.css", []byte(css), 0)
+}
+
+/*
 func processExpect(path string, info os.FileInfo, err error) error {
 	if filepath.Ext(path) == ".gass" && !strings.HasPrefix(path, "_") {
 		in, err := ioutil.ReadFile(path)
@@ -33,3 +39,4 @@ func TestExpect(t *testing.T) {
 		t.Error(err)
 	}
 }
+*/

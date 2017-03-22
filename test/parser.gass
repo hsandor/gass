@@ -1,0 +1,14 @@
+first1
+	second
+		color:blue
+		third1,
+		third2
+			color:green
+			fourth1,
+			fourth2
+				color:black
+
+		third3
+			color:red
+first2
+	color:yellow

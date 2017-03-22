@@ -1,8 +1,10 @@
 package gass
 
+/*
 import (
 	"testing"
 )
+
 
 func TestIndentLevelCalculation(t *testing.T) {
 	// https://docs.python.org/release/2.5.1/ref/indentation.html
@@ -21,3 +23,4 @@ func TestIndentLevelCalculation(t *testing.T) {
 		}
 	}
 }
+*/

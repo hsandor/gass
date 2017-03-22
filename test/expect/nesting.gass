@@ -26,6 +26,12 @@ nav
         hover
             color:red
 
+		.first,
+		.second,
+		.third
+			border:1px
+			color:black
+
 html,
 body,
 ul,
