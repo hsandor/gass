@@ -12,3 +12,11 @@ first1
 			color:red
 first2
 	color:yellow
+
+first3
+	color:blue
+	&:hover
+		color:red
+		&:not(not-&-valami)
+			color:pink
+

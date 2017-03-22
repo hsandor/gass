@@ -33,6 +33,17 @@ func decideLineType(s string) int {
 	}
 }
 
+func resolveAmpersand(prefix []string, name string) string {
+	if strings.Index(name, "&") < 0 {
+		return name
+	} else if len(prefix) > 0 {
+		return strings.Replace(name, "&", prefix[len(prefix)-1], -1)
+	} else {
+		fmt.Println("warning: top level ampersand:", name)
+		return ""
+	}
+}
+
 func dumpElementTree(e *element) {
 	if len(e.names) > 0 {
 		fmt.Print(strings.Repeat("\t", e.level-1))

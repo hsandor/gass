@@ -77,7 +77,7 @@ func (p *parser) parseString(str string) (string, error) {
 
 	//dumpElementTree(p.root)
 
-	return p.root.css(""), nil
+	return p.root.css([]string{}), nil
 }
 
 func newParser() *parser {

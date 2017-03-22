@@ -41,37 +41,37 @@ func (e *element) addProperty(name, value string) error {
 	return nil
 }
 
-func (e *element) css(prefix string) string {
+func (e *element) css(prefix []string) string {
 	res := ""
 
 	if len(e.properties) > 0 {
 		for i, n := range e.names {
-			res += prefix
-			if len(prefix) > 0 {
-				res += " "
+			cn := resolveAmpersand(prefix, n)
+
+			if cn == n {
+				res += strings.Join(prefix, " ")
+				if len(prefix) > 0 {
+					res += " "
+				}
 			}
-			res += n
+
+			res += cn
 			if i < len(e.names)-1 {
 				res += ",\n"
 			}
-
 		}
 
 		res += " {\n"
 		for n, v := range e.properties {
 			res += fmt.Sprintf("  %s: %s;\n", n, v)
 		}
-		res += "}\n\n"
+		res += "}\n"
 	}
 
 	if len(e.names) > 0 {
 		for _, n := range e.names {
 			for _, c := range e.children {
-				if len(prefix) > 0 {
-					res += c.css(prefix + " " + n)
-				} else {
-					res += c.css(n)
-				}
+				res += c.css(append(prefix, resolveAmpersand(prefix, n)))
 			}
 		}
 	} else {
