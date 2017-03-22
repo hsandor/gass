@@ -15,8 +15,16 @@ first2
 
 first3
 	color:blue
+
 	&:hover
 		color:red
-		&:not(not-&-valami)
-			color:pink
+			
+	&.active
+		color:green
+		
+		&:hover
+			border:1px solid black
+			
+	&:not(&.active):hover
+		border:1px solid red
 
