@@ -75,9 +75,9 @@ func (p *parser) parseString(str string) (string, error) {
 		fmt.Println(strings.Join(p.errors, "\n"))
 	}
 
-	//dumpElementTree(p.root)
+	//fmt.Println(p.root.gass())
 
-	return p.root.css([]string{}), nil
+	return p.root.css("", ""), nil
 }
 
 func newParser() *parser {

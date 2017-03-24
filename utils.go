@@ -1,7 +1,6 @@
 package gass
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -30,34 +29,5 @@ func decideLineType(s string) int {
 		return l_property
 	} else {
 		return l_element
-	}
-}
-
-func resolveAmpersand(prefix []string, name string) string {
-	if strings.Index(name, "&") < 0 {
-		return name
-	} else if len(prefix) > 0 {
-		return strings.Replace(name, "&", prefix[len(prefix)-1], -1)
-	} else {
-		fmt.Println("warning: top level ampersand:", name)
-		return ""
-	}
-}
-
-func dumpElementTree(e *element) {
-	if len(e.names) > 0 {
-		fmt.Print(strings.Repeat("\t", e.level-1))
-		fmt.Println(strings.Join(e.names, ","))
-	}
-	if e.properties != nil {
-		for n, v := range e.properties {
-			fmt.Printf("%s%s:%s\n", strings.Repeat("\t", e.level), n, v)
-		}
-		fmt.Println("")
-	}
-	if len(e.children) > 0 {
-		for _, c := range e.children {
-			dumpElementTree(c)
-		}
 	}
 }
