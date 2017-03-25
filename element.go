@@ -47,7 +47,6 @@ func (e *element) addVariable(name, value string) {
 		e.variables = make(map[string]string)
 	}
 	e.variables[n] = interpolateVariables(e, v)
-	fmt.Println("new variable:", n, ":", e.variables[n])
 }
 
 func (e *element) getVariable(name string) (value string) {
