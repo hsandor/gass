@@ -43,39 +43,24 @@ func (e *element) addProperty(name, value string) error {
 
 func (e *element) cssProperties(prefix, previous string) (res string) {
 	res = ""
-
-	if len(e.properties) <= 0 {
-		return
-	}
-
-	for i, n := range e.names {
-
-		cn := strings.Replace(n, "&", previous, -1)
-
-		res += prefix
-
-		if len(prefix) > 0 {
-			res += " "
+	if len(e.properties) > 0 {
+		for i, n := range e.names {
+			pref, name := resolveAmpersand(prefix, previous, n)
+			res += pref
+			if len(res) > 0 {
+				res += " "
+			}
+			res += name
+			if i < len(e.names)-1 {
+				res += ",\n"
+			}
 		}
-
-		if n == cn {
-			res += previous
-			res += " "
+		res += " {\n"
+		for n, v := range e.properties {
+			res += fmt.Sprintf("  %s: %s;\n", n, v)
 		}
-
-		res += cn
-
-		if i < len(e.names)-1 {
-			res += ",\n"
-		}
+		res += "}\n"
 	}
-
-	res += " {\n"
-	for n, v := range e.properties {
-		res += fmt.Sprintf("  %s: %s;\n", n, v)
-	}
-	res += "}\n"
-
 	return
 }
 
@@ -85,18 +70,8 @@ func (e *element) cssChildren(prefix, previous string) (res string) {
 	if len(e.names) > 0 {
 		for _, n := range e.names {
 			for _, c := range e.children {
-				cn := strings.Replace(n, "&", previous, -1)
-				p := ""
-
-				if cn == n {
-					p += prefix
-					if len(prefix) > 0 {
-						p += " "
-					}
-					p += previous
-				}
-
-				res += c.css(p, cn)
+				pref, name := resolveAmpersand(prefix, previous, n)
+				res += c.css(pref, name)
 			}
 		}
 	} else {
@@ -109,15 +84,14 @@ func (e *element) cssChildren(prefix, previous string) (res string) {
 }
 
 func (e *element) css(prefix, previous string) (res string) {
-	res = e.cssProperties(prefix, previous)
-	return res + e.cssChildren(prefix, previous)
+	return e.cssProperties(prefix, previous) + e.cssChildren(prefix, previous)
 }
 
 func (e *element) gass() (res string) {
 	if len(e.names) > 0 {
-		pre := strings.Repeat("\t", e.level-1)
+		t := strings.Repeat("\t", e.level-1)
 		for i := 0; i < len(e.names); i++ {
-			res += pre + e.names[i]
+			res += t + e.names[i]
 			if i < len(e.names)-1 {
 				res += ",\n"
 			}
@@ -125,8 +99,9 @@ func (e *element) gass() (res string) {
 		res += "\n"
 	}
 	if e.properties != nil {
+		t := strings.Repeat("\t", e.level)
 		for n, v := range e.properties {
-			res += fmt.Sprintf("%s%s:%s\n", strings.Repeat("\t", e.level), n, v)
+			res += fmt.Sprintf("%s%s:%s\n", t, n, v)
 		}
 		res += "\n"
 	}

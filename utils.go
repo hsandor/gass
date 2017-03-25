@@ -31,3 +31,15 @@ func decideLineType(s string) int {
 		return l_element
 	}
 }
+
+func resolveAmpersand(prefix, previous, currname string) (pref, name string) {
+	pref = prefix
+	name = strings.Replace(currname, "&", previous, -1)
+	if name == currname {
+		if len(pref) > 0 {
+			pref += " "
+		}
+		pref += previous
+	}
+	return
+}
