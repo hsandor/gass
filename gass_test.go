@@ -1,14 +1,13 @@
 package gass
 
 import (
-	"io/ioutil"
 	"testing"
 )
 
-func testFile(inf, outf string) {
-	in, _ := ioutil.ReadFile(inf)
-	css, _ := ParseString(string(in))
-	ioutil.WriteFile(outf, []byte(css), 0)
+func testFile(t *testing.T, file string) {
+	if _, err := CompileFile(file, true); err != nil {
+		t.Error(err)
+	}
 }
 
 func TestParser(t *testing.T) {

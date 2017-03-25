@@ -138,6 +138,7 @@ func ReplaceAmpersand(lin *Line) {
 	}
 }
 
+/*
 func CompileString(src string) string {
 	root := NewLine("")
 	last := root
@@ -194,3 +195,4 @@ func CompileString(src string) string {
 
 	return FormatOutput(root, "")
 }
+*/

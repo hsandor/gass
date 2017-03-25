@@ -1,53 +1,75 @@
 package gass
 
 import (
-	"fmt"
+	"bytes"
+	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
 
-func BuildString(str string) (css string, err error) {
-	return "", nil
-}
-
-func BuildFile(file string) (err error) {
-	return nil
-}
-
-func BuildFolder(folder string) (err error) {
-	return nil
-}
-
-func FormatString(str string) (gass string, err error) {
-	return "", nil
-}
-
-func FormatFile(file string) (gass string, err error) {
-	return "", nil
-}
-
-func FormatFolder(folder string) (err error) {
-	return nil
-}
-
-// https://www.reddit.com/r/golang/comments/2gkofb/yosssigcss_pure_go_css_preprocessor/
-
-func ParseString(s string) (string, error) {
-	p := newParser()
-	return p.parseString(s)
-}
-
-func CompileFile(name string) {
-	src, err := ioutil.ReadFile(name)
-
+// Compile compiles a GASS formatted source provided by r (io.Reader)
+// and write the generated CSS into w (io.Writer).
+// Any hard error during the compilation returned as usual.
+func Compile(w io.Writer, r io.Reader) error {
+	src, err := ioutil.ReadAll(r)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
+	p := newParser()
+	dst, err := p.parseString(string(src))
+	if err != nil {
+		return err
+	}
+	_, err = w.Write([]byte(dst))
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-	css, _ := ParseString(string(src))
-	nfn := strings.TrimSuffix(name, filepath.Ext(name)) + ".css"
+// CompileString compiled a GASS formatted string provided in src into a CSS
+// and returned with a possible error.
+func CompileString(src string) (string, error) {
+	r := bytes.NewBufferString(src)
+	w := bytes.NewBuffer([]byte{})
+	if err := Compile(w, r); err != nil {
+		return "", err
+	}
+	return w.String(), nil
+}
 
-	ioutil.WriteFile(nfn, []byte(css), 0)
+// CompileFile compiles the given file(name) in src from a GASS format into a CSS
+// file and returned the new file's path and name with any error code encountered
+// during the process. The build argument instruments the function to recompile
+// the source even if it's already up to date (by file modificaton time check).
+func CompileFile(src string, build bool) (string, error) {
+	dst := strings.TrimSuffix(src, filepath.Ext(src)) + ".css"
+	sinfo, err := os.Stat(src)
+	if err != nil {
+		return "", err
+	}
+	dinfo, err := os.Stat(dst)
+	if err == nil {
+		if !sinfo.ModTime().After(dinfo.ModTime()) && !build {
+			return dst, nil
+		}
+	}
+	fsrc, err := os.Open(src)
+	if err != nil {
+		return "", err
+	}
+	defer fsrc.Close()
+
+	fdst, err := os.Create(dst)
+	if err != nil {
+		return "", err
+	}
+	defer fdst.Close()
+
+	if err = Compile(fdst, fsrc); err != nil {
+		return "", err
+	}
+	return dst, nil
 }
