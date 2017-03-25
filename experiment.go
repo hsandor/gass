@@ -2,8 +2,6 @@ package gass
 
 import (
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
 	"strings"
 )
 
@@ -195,18 +193,4 @@ func CompileString(src string) string {
 	}
 
 	return FormatOutput(root, "")
-}
-
-func CompileFile(name string) {
-	src, err := ioutil.ReadFile(name)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	css := CompileString(string(src))
-	nfn := strings.TrimSuffix(name, filepath.Ext(name)) + ".css"
-
-	ioutil.WriteFile(nfn, []byte(css), 0)
 }

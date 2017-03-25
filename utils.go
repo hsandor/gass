@@ -25,7 +25,9 @@ func calcIndentLevel(s string) int {
 }
 
 func decideLineType(s string) int {
-	if !strings.HasPrefix(s, "&") && strings.Contains(s, ":") {
+	if strings.HasPrefix(s, "$") && strings.Contains(s, ":") {
+		return l_variable
+	} else if !strings.HasPrefix(s, "&") && strings.Contains(s, ":") {
 		return l_property
 	} else {
 		return l_element
@@ -42,4 +44,25 @@ func resolveAmpersand(prefix, previous, currname string) (pref, name string) {
 		pref += previous
 	}
 	return
+}
+
+func interpolateVariables(e *element, str string) (res string) {
+	if strings.Contains(str, "$") {
+		vars := strings.Split(str, "$")
+		for i, v := range vars {
+			if i > 0 {
+				n := strings.IndexAny(v, " @#&(){}[];:,./")
+				if n >= 0 {
+					res += e.getVariable(v[:n])
+					res += v[n:]
+				} else {
+					res += e.getVariable(v)
+				}
+			} else {
+				res += v
+			}
+		}
+		return
+	}
+	return str
 }

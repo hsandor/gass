@@ -38,6 +38,13 @@ func (p *parser) parseElement(indent int, str string) {
 	}
 }
 
+func (p *parser) parseVariable(str string) {
+	s := str[strings.Index(str, "$")+1:]
+	n := strings.TrimSpace(s[:strings.Index(s, ":")])
+	v := strings.TrimSpace(s[strings.Index(s, ":")+1:])
+	p.last.addVariable(n, v)
+}
+
 func (p *parser) parseProperty(str string) {
 	prop := strings.SplitN(str, ":", 2)
 	if len(prop) == 2 {
@@ -50,9 +57,10 @@ func (p *parser) parseLine(line string) error {
 	if len(l) > 0 {
 		indent := calcIndentLevel(line)
 		ltype := decideLineType(l)
-
 		if ltype == l_element {
 			p.parseElement(indent, l)
+		} else if ltype == l_variable {
+			p.parseVariable(l)
 		} else if ltype == l_property {
 			if p.list {
 				p.addError(errors.New("open list followed by property:" + line))
@@ -70,13 +78,10 @@ func (p *parser) parseString(str string) (string, error) {
 			return "", err
 		}
 	}
-
 	if len(p.errors) > 0 {
 		fmt.Println(strings.Join(p.errors, "\n"))
 	}
-
 	//fmt.Println(p.root.gass())
-
 	return p.root.css("", ""), nil
 }
 
@@ -86,9 +91,4 @@ func newParser() *parser {
 	p.parent = p.root
 	p.last = p.root
 	return p
-}
-
-func ParseString(s string) (string, error) {
-	p := newParser()
-	return p.parseString(s)
 }

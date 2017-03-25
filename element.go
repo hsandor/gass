@@ -13,6 +13,7 @@ type element struct {
 	children   []*element
 	names      []string
 	properties map[string]string
+	variables  map[string]string
 }
 
 func (e *element) addName(name string) error {
@@ -35,8 +36,30 @@ func (e *element) addProperty(name, value string) error {
 			return errors.New("property already exists:" + n)
 		}
 	}
-	e.properties[n] = v
+	e.properties[n] = interpolateVariables(e, v)
 	return nil
+}
+
+func (e *element) addVariable(name, value string) {
+	n := strings.TrimSpace(name)
+	v := strings.TrimSpace(value)
+	if e.variables == nil {
+		e.variables = make(map[string]string)
+	}
+	e.variables[n] = interpolateVariables(e, v)
+	fmt.Println("new variable:", n, ":", e.variables[n])
+}
+
+func (e *element) getVariable(name string) (value string) {
+	if e.variables != nil {
+		if value, ok := e.variables[name]; ok {
+			return value
+		}
+	}
+	if e.parent != nil {
+		return e.parent.getVariable(name)
+	}
+	return ""
 }
 
 func (e *element) cssProperties(prefix, previous string) (res string) {

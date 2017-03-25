@@ -5,13 +5,15 @@ import (
 	"testing"
 )
 
+func testFile(inf, outf string) {
+	in, _ := ioutil.ReadFile(inf)
+	css, _ := ParseString(string(in))
+	ioutil.WriteFile(outf, []byte(css), 0)
+}
+
 func TestParser(t *testing.T) {
-	in, err := ioutil.ReadFile("test/parser.gass")
-	if err != nil {
-		t.Error(err)
-	}
-	css, err := ParseString(string(in))
-	ioutil.WriteFile("test/parser.css", []byte(css), 0)
+	testFile("test/parser.gass", "test/parser.css")
+	testFile("test/variables.gass", "test/variables.css")
 }
 
 /*
