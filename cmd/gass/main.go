@@ -24,7 +24,9 @@ func main() {
 
 	cmd := os.Args[1]
 
-	if cmd == "build" {
+	if cmd == "fmt" {
+
+	} else {
 		if len(os.Args) > 2 {
 			if os.Args[2] == "-a" {
 				// all *.gass in current directory

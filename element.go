@@ -28,7 +28,6 @@ func (e *element) addName(name string) error {
 func (e *element) addProperty(name, value string) error {
 	n := strings.TrimSpace(name)
 	v := strings.TrimSpace(value)
-
 	if e.properties == nil {
 		e.properties = make(map[string]string)
 	} else {
@@ -36,7 +35,6 @@ func (e *element) addProperty(name, value string) error {
 			return errors.New("property already exists:" + n)
 		}
 	}
-
 	e.properties[n] = v
 	return nil
 }
@@ -66,7 +64,6 @@ func (e *element) cssProperties(prefix, previous string) (res string) {
 
 func (e *element) cssChildren(prefix, previous string) (res string) {
 	res = ""
-
 	if len(e.names) > 0 {
 		for _, n := range e.names {
 			for _, c := range e.children {
@@ -79,7 +76,6 @@ func (e *element) cssChildren(prefix, previous string) (res string) {
 			res += c.css("", "")
 		}
 	}
-
 	return
 }
 
