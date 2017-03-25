@@ -1,8 +1,10 @@
+$toLowerCase: IWILLBELOWERCASED
+
 .my-class
 	/* it works! */
 	content: to-upper-case('iam uppercased')
 	margin-top: str-length('ez egy hosszú szöveg')px
-	background-image: to-lower-case(IWILLBELOWERCASED)
+	background-image: to-lower-case($toLowerCase)
 	
 	/* partially done */
 	padding: random()
