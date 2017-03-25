@@ -1,0 +1,11 @@
+.my-class
+	/* it works! */
+	content: to-upper-case('iam uppercased')
+	margin-top: str-length('ez egy hosszú szöveg')px
+	background-image: to-lower-case(IWILLBELOWERCASED)
+	
+	/* partially done */
+	padding: random()
+	
+	/* it doesn't */
+	color: get-color('purple')

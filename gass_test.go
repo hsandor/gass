@@ -14,6 +14,7 @@ func testFile(inf, outf string) {
 func TestParser(t *testing.T) {
 	testFile("test/parser.gass", "test/parser.css")
 	testFile("test/variables.gass", "test/variables.css")
+	testFile("test/functions.gass", "test/functions.css")
 }
 
 /*

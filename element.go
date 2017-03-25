@@ -36,6 +36,7 @@ func (e *element) addProperty(name, value string) error {
 			return errors.New("property already exists:" + n)
 		}
 	}
+	v = callFunctions(e, v)
 	e.properties[n] = interpolateVariables(e, v)
 	return nil
 }

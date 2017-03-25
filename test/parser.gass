@@ -1,3 +1,5 @@
+$var: greenfos
+
 first1
 	second
 		color:blue
@@ -26,5 +28,5 @@ first3
 			border:1px solid black
 			
 	&:not(&.active):hover
-		border:1px solid red
+		border:1px solid $var
 
