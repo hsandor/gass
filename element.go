@@ -63,7 +63,6 @@ func (e *element) getVariable(name string) (value string) {
 
 func (e *element) css(prefix, previous string) (res string) {
 	if len(e.properties) > 0 {
-		sp := sortedRange(e.properties)
 		for i, n := range e.names {
 			pref, name := resolveAmpersand(prefix, previous, n)
 			res += pref
@@ -76,7 +75,7 @@ func (e *element) css(prefix, previous string) (res string) {
 			}
 		}
 		res += " {\n"
-		for _, n := range sp {
+		for _, n := range sortedRange(e.properties) {
 			res += fmt.Sprintf("\t%s: %s;\n", n, e.properties[n])
 		}
 		res += "}\n"
