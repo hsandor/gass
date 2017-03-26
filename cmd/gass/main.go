@@ -2,49 +2,61 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/hsandor/gass"
 )
 
 func fileExists(name string) bool {
 	_, err := os.Stat(name)
-	if err == nil {
-		return true
-	}
-	return false
+	return err == nil
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: gass <build|fmt> [inputfile]")
+		fmt.Println("usage:")
+		fmt.Println("  gass build                 - compile all gass file in current directory")
+		fmt.Println("  gass [build] <input file>  - compile the given file ")
 		os.Exit(1)
 	}
 
 	cmd := os.Args[1]
 
 	if cmd == "fmt" {
-
-	} else {
-		if len(os.Args) > 2 {
-			if os.Args[2] == "-a" {
-				// all *.gass in current directory
-			} else if fileExists(os.Args[2]) {
-				// given file
-			} else {
-				fmt.Println("can't open file: ", os.Args[2])
-			}
-		} else {
-			if src, err := ioutil.ReadAll(os.Stdin); err != nil {
+		fmt.Println("not implemented - yet")
+	} else if cmd == "build" {
+		if len(os.Args) >= 3 {
+			if css, err := gass.CompileFile(os.Args[2], false); err != nil {
 				fmt.Println(err)
 			} else {
-				if css, err := gass.ParseString(string(src)); err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Println(css)
+				fmt.Println("generate:", css)
+			}
+		} else {
+			if files, err := filepath.Glob("./*.gass"); err != nil {
+				fmt.Println(err)
+			} else {
+				for _, file := range files {
+					if !strings.HasPrefix(file, "_") {
+						if css, err := gass.CompileFile(file, false); err != nil {
+							fmt.Println(err)
+						} else {
+							fmt.Println("generate:", css)
+						}
+					}
 				}
 			}
+		}
+	} else {
+		if fileExists(os.Args[1]) {
+			if css, err := gass.CompileFile(os.Args[1], false); err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println("generate:", css)
+			}
+		} else {
+			fmt.Println("argument error:", os.Args[1])
 		}
 	}
 }
