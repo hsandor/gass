@@ -36,9 +36,7 @@ func (e *element) addProperty(name, value string) error {
 			return errors.New("property already exists:" + n)
 		}
 	}
-	v = interpolateVariables(e, v)
-	e.properties[n] = callFunctions(e, v)
-
+	e.properties[n] = callFunctions(e, interpolateVariables(e, v))
 	return nil
 }
 
@@ -63,9 +61,9 @@ func (e *element) getVariable(name string) (value string) {
 	return ""
 }
 
-func (e *element) cssProperties(prefix, previous string) (res string) {
-	res = ""
+func (e *element) css(prefix, previous string) (res string) {
 	if len(e.properties) > 0 {
+		sp := sortedRange(e.properties)
 		for i, n := range e.names {
 			pref, name := resolveAmpersand(prefix, previous, n)
 			res += pref
@@ -78,16 +76,11 @@ func (e *element) cssProperties(prefix, previous string) (res string) {
 			}
 		}
 		res += " {\n"
-		for n, v := range e.properties {
-			res += fmt.Sprintf("  %s: %s;\n", n, v)
+		for _, n := range sp {
+			res += fmt.Sprintf("\t%s: %s;\n", n, e.properties[n])
 		}
 		res += "}\n"
 	}
-	return
-}
-
-func (e *element) cssChildren(prefix, previous string) (res string) {
-	res = ""
 	if len(e.names) > 0 {
 		for _, n := range e.names {
 			for _, c := range e.children {
@@ -101,10 +94,6 @@ func (e *element) cssChildren(prefix, previous string) (res string) {
 		}
 	}
 	return
-}
-
-func (e *element) css(prefix, previous string) (res string) {
-	return e.cssProperties(prefix, previous) + e.cssChildren(prefix, previous)
 }
 
 func (e *element) gass() (res string) {

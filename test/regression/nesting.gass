@@ -1,0 +1,53 @@
+
+nav
+    ul
+        margin: 0
+        padding: 0
+        list-style: none
+
+    li
+        display: inline-block
+
+    .my-class
+        &--disabled
+            color: red
+
+        &--selected
+            color: green
+
+        &:not(&--disabled):not(&--selected):hover
+          border: 1px solid black
+
+    &:hover,
+    &:active
+        color: green
+
+first1
+	second
+		color:blue
+		third1,
+		third2
+			color:green
+			fourth1,
+			fourth2
+				color:black
+
+		third3
+			color:red
+first2
+	color:yellow
+
+first3
+	color:blue
+
+	&:hover
+		color:red
+
+	&.active
+		color:green
+
+		&:hover
+			border:1px solid black
+
+	&:not(&.active):hover
+		border:1px solid $var

@@ -1,6 +1,7 @@
 package gass
 
 import (
+	"sort"
 	"strings"
 )
 
@@ -65,4 +66,12 @@ func interpolateVariables(e *element, str string) (res string) {
 		return
 	}
 	return str
+}
+
+func sortedRange(m map[string]string) (sorted []string) {
+	for k, _ := range m {
+		sorted = append(sorted, k)
+	}
+	sort.Strings(sorted)
+	return
 }
