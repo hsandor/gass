@@ -7,11 +7,12 @@ import (
 )
 
 type parser struct {
-	errors []string
-	root   *element
-	parent *element
-	last   *element
-	list   bool
+	errors  []string
+	root    *element
+	parent  *element
+	last    *element
+	list    bool
+	comment int // level of starting comment block
 }
 
 func (p *parser) addError(err error) {
@@ -57,16 +58,25 @@ func (p *parser) parseLine(line string) error {
 	if len(l) > 0 {
 		indent := calcIndentLevel(line)
 		ltype := decideLineType(l)
-		if ltype == l_element {
-			p.parseElement(indent, l)
-		} else if ltype == l_variable {
-			p.parseVariable(l)
-		} else if ltype == l_property {
-			if p.list {
-				p.addError(errors.New("open list followed by property:" + line))
-				p.list = false
+		if ltype == l_comment {
+			p.comment = indent
+		} else if p.comment > 0 {
+			if indent <= p.comment {
+				p.comment = 0
 			}
-			p.parseProperty(l)
+		}
+		if p.comment <= 0 {
+			if ltype == l_element {
+				p.parseElement(indent, l)
+			} else if ltype == l_variable {
+				p.parseVariable(l)
+			} else if ltype == l_property {
+				if p.list {
+					p.addError(errors.New("open list followed by property:" + line))
+					p.list = false
+				}
+				p.parseProperty(l)
+			}
 		}
 	}
 	return nil

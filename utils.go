@@ -9,6 +9,7 @@ const (
 	l_element = iota
 	l_property
 	l_variable
+	l_comment
 )
 
 func calcIndentLevel(s string) int {
@@ -26,7 +27,9 @@ func calcIndentLevel(s string) int {
 }
 
 func decideLineType(s string) int {
-	if strings.HasPrefix(s, "$") && strings.Contains(s, ":") {
+	if strings.HasPrefix(s, "//") || strings.HasPrefix(s, "/*") {
+		return l_comment
+	} else if strings.HasPrefix(s, "$") && strings.Contains(s, ":") {
 		return l_variable
 	} else if !strings.HasPrefix(s, "&") && strings.Contains(s, ":") {
 		return l_property
