@@ -3,7 +3,6 @@ package gass
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,20 +12,8 @@ import (
 // and write the generated CSS into w (io.Writer).
 // Any hard error during the compilation returned as usual.
 func Compile(w io.Writer, r io.Reader) error {
-	src, err := ioutil.ReadAll(r)
-	if err != nil {
-		return err
-	}
 	p := newParser()
-	dst, err := p.parseString(string(src))
-	if err != nil {
-		return err
-	}
-	_, err = w.Write([]byte(dst))
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.compile(w, r)
 }
 
 // CompileString compiled a GASS formatted string provided in src into a CSS
@@ -45,17 +32,20 @@ func CompileString(src string) (string, error) {
 // during the process. The build argument instruments the function to recompile
 // the source even if it's already up to date (by file modificaton time check).
 func CompileFile(src string, build bool) (string, error) {
-	dst := strings.TrimSuffix(src, filepath.Ext(src)) + ".css"
 	sinfo, err := os.Stat(src)
 	if err != nil {
 		return "", err
 	}
+
+	dst := strings.TrimSuffix(src, filepath.Ext(src)) + ".css"
+
 	dinfo, err := os.Stat(dst)
 	if err == nil {
 		if !sinfo.ModTime().After(dinfo.ModTime()) && !build {
 			return dst, nil
 		}
 	}
+
 	fsrc, err := os.Open(src)
 	if err != nil {
 		return "", err
@@ -71,5 +61,6 @@ func CompileFile(src string, build bool) (string, error) {
 	if err = Compile(fdst, fsrc); err != nil {
 		return "", err
 	}
+
 	return dst, nil
 }

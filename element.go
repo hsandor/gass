@@ -3,6 +3,7 @@ package gass
 import (
 	"errors"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -61,64 +62,63 @@ func (e *element) getVariable(name string) (value string) {
 	return ""
 }
 
-func (e *element) css(prefix, previous string) (res string) {
+func (e *element) css(w io.Writer, prefix, previous string) {
 	if len(e.properties) > 0 {
 		for i, n := range e.names {
 			pref, name := resolveAmpersand(prefix, previous, n)
-			res += pref
-			if len(res) > 0 {
-				res += " "
+			fmt.Fprint(w, pref)
+			if len(pref) > 0 {
+				fmt.Fprint(w, " ")
 			}
-			res += name
+			fmt.Fprint(w, name)
 			if i < len(e.names)-1 {
-				res += ",\n"
+				fmt.Fprintln(w, ",")
 			}
 		}
-		res += " {\n"
+		fmt.Fprintln(w, " {")
 		for _, n := range sortedRange(e.properties) {
-			res += fmt.Sprintf("\t%s: %s;\n", n, e.properties[n])
+			fmt.Fprintf(w, "\t%s: %s;\n", n, e.properties[n])
 		}
-		res += "}\n"
+		fmt.Fprintln(w, "}")
 	}
 	if len(e.names) > 0 {
 		for _, n := range e.names {
 			for _, c := range e.children {
 				pref, name := resolveAmpersand(prefix, previous, n)
-				res += c.css(pref, name)
+				c.css(w, pref, name)
 			}
 		}
 	} else {
 		for _, c := range e.children {
-			res += c.css("", "")
+			c.css(w, "", "")
 		}
 	}
 	return
 }
 
-func (e *element) gass() (res string) {
+func (e *element) gass(w io.Writer) {
 	if len(e.names) > 0 {
 		t := strings.Repeat("\t", e.level-1)
 		for i := 0; i < len(e.names); i++ {
-			res += t + e.names[i]
+			fmt.Fprint(w, t, e.names[i])
 			if i < len(e.names)-1 {
-				res += ",\n"
+				fmt.Fprintln(w, ",")
 			}
 		}
-		res += "\n"
+		fmt.Fprintln(w, "")
 	}
 	if e.properties != nil {
 		t := strings.Repeat("\t", e.level)
 		for n, v := range e.properties {
-			res += fmt.Sprintf("%s%s:%s\n", t, n, v)
+			fmt.Fprintf(w, "%s%s:%s\n", t, n, v)
 		}
-		res += "\n"
+		fmt.Println(w, "")
 	}
 	if len(e.children) > 0 {
 		for _, c := range e.children {
-			res += c.gass()
+			c.gass(w)
 		}
 	}
-	return
 }
 
 func newElement(indent int, parent *element) *element {

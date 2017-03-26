@@ -16,7 +16,7 @@ nav .my-class:not(.my-class--disabled):not(.my-class--selected):hover {
 	border: 1px solid black;
 }
 nav:hover,
- nav:active {
+nav:active {
 	color: green;
 }
 first1 second {

@@ -1,8 +1,9 @@
 package gass
 
 import (
+	"bufio"
 	"errors"
-	"fmt"
+	"io"
 	"strings"
 )
 
@@ -82,17 +83,15 @@ func (p *parser) parseLine(line string) error {
 	return nil
 }
 
-func (p *parser) parseString(str string) (string, error) {
-	for _, line := range strings.Split(str, "\n") {
-		if err := p.parseLine(line); err != nil {
-			return "", err
+func (p *parser) compile(w io.Writer, r io.Reader) error {
+	s := bufio.NewScanner(r)
+	for s.Scan() {
+		if err := p.parseLine(s.Text()); err != nil {
+			return err
 		}
 	}
-	if len(p.errors) > 0 {
-		fmt.Println(strings.Join(p.errors, "\n"))
-	}
-	//fmt.Println(p.root.gass())
-	return p.root.css("", ""), nil
+	p.root.css(w, "", "")
+	return nil
 }
 
 func newParser() *parser {
