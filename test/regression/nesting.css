@@ -1,0 +1,57 @@
+nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+nav li {
+	display: inline-block;
+}
+nav .my-class--disabled {
+	color: red;
+}
+nav .my-class--selected {
+	color: green;
+}
+nav .my-class:not(.my-class--disabled):not(.my-class--selected):hover {
+	border: 1px solid black;
+}
+nav:hover,
+ nav:active {
+	color: green;
+}
+first1 second {
+	color: blue;
+}
+first1 second third1,
+first1 second third2 {
+	color: green;
+}
+first1 second third1 fourth1,
+first1 second third1 fourth2 {
+	color: black;
+}
+first1 second third2 fourth1,
+first1 second third2 fourth2 {
+	color: black;
+}
+first1 second third3 {
+	color: red;
+}
+first2 {
+	color: yellow;
+}
+first3 {
+	color: blue;
+}
+first3:hover {
+	color: red;
+}
+first3.active {
+	color: green;
+}
+first3.active:hover {
+	border: 1px solid black;
+}
+first3:not(first3.active):hover {
+	border: 1px solid ;
+}

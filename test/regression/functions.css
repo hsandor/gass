@@ -1,0 +1,7 @@
+.my-class {
+	background-image: iwillbelowercased;
+	color: get-color('purple');
+	content: 'IAM UPPERCASED';
+	margin-top: 24px;
+	padding: 1;
+}
