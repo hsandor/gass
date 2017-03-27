@@ -4,25 +4,20 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"strconv"
 	"strings"
 )
 
 type parser struct {
-	errors  []string
 	root    *element
 	parent  *element
 	last    *element
-	list    bool
-	comment int // level of starting comment block
+	list    bool // comma separated list of elements
+	comment int  // indentation level of starting comment block
+	linecnt int
 }
 
-func (p *parser) addError(err error) {
-	if err != nil {
-		p.errors = append(p.errors, err.Error())
-	}
-}
-
-func (p *parser) parseElement(indent int, str string) {
+func (p *parser) parseElement(indent int, str string) error {
 	if indent > p.last.indent {
 		p.parent = p.last
 	} else if indent < p.last.indent {
@@ -34,10 +29,15 @@ func (p *parser) parseElement(indent int, str string) {
 		p.last = newElement(indent, p.parent)
 	}
 	if p.list = strings.HasSuffix(str, ","); p.list {
-		p.addError(p.last.addName(str[:len(str)-1]))
+		if err := p.last.addName(str[:len(str)-1]); err != nil {
+			return err
+		}
 	} else {
-		p.addError(p.last.addName(str))
+		if err := p.last.addName(str); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (p *parser) parseVariable(str string) {
@@ -47,14 +47,18 @@ func (p *parser) parseVariable(str string) {
 	p.last.addVariable(n, v)
 }
 
-func (p *parser) parseProperty(str string) {
+func (p *parser) parseProperty(str string) error {
 	prop := strings.SplitN(str, ":", 2)
 	if len(prop) == 2 {
-		p.addError(p.last.addProperty(prop[0], prop[1]))
+		if err := p.last.addProperty(prop[0], prop[1]); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (p *parser) parseLine(line string) error {
+	p.linecnt++
 	l := strings.TrimSpace(line)
 	if len(l) > 0 {
 		indent := calcIndentLevel(line)
@@ -66,15 +70,21 @@ func (p *parser) parseLine(line string) error {
 				p.comment = 0
 			}
 		}
+
 		if p.comment <= 0 {
+			l = stripLineComments(l)
+			if strings.HasSuffix(l, ";") {
+				return errors.New("line shouldn't terminate with semicolon:" + strconv.Itoa(p.linecnt))
+			}
 			if ltype == l_element {
-				p.parseElement(indent, l)
+				if err := p.parseElement(indent, l); err != nil {
+					return err
+				}
 			} else if ltype == l_variable {
 				p.parseVariable(l)
 			} else if ltype == l_property {
 				if p.list {
-					p.addError(errors.New("open list followed by property:" + line))
-					p.list = false
+					return errors.New("open list followed by property:" + strconv.Itoa(p.linecnt))
 				}
 				p.parseProperty(l)
 			}

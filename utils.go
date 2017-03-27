@@ -78,3 +78,10 @@ func sortedRange(m map[string]string) (sorted []string) {
 	sort.Strings(sorted)
 	return
 }
+
+func stripLineComments(s string) string {
+	if pos := strings.Index(s, "//"); pos >= 0 {
+		return s[:pos]
+	}
+	return s
+}

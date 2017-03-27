@@ -31,13 +31,13 @@ func CompileString(src string) (string, error) {
 // file and returned the new file's path and name with any error code encountered
 // during the process. The build argument instruments the function to recompile
 // the source even if it's already up to date (by file modificaton time check).
-func CompileFile(src string, build bool) (string, error) {
-	sinfo, err := os.Stat(src)
+func CompileFile(fileName string, build bool) (string, error) {
+	sinfo, err := os.Stat(fileName)
 	if err != nil {
 		return "", err
 	}
 
-	dst := strings.TrimSuffix(src, filepath.Ext(src)) + ".css"
+	dst := strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".css"
 
 	dinfo, err := os.Stat(dst)
 	if err == nil {
@@ -46,7 +46,7 @@ func CompileFile(src string, build bool) (string, error) {
 		}
 	}
 
-	fsrc, err := os.Open(src)
+	fsrc, err := os.Open(fileName)
 	if err != nil {
 		return "", err
 	}
