@@ -50,7 +50,7 @@ func (e *element) addVariable(name, value string) {
 	e.variables[n] = interpolateVariables(e, v)
 }
 
-func (e *element) getVariable(name string) (value string) {
+func (e *element) getVariable(name string) string {
 	if e.variables != nil {
 		if value, ok := e.variables[name]; ok {
 			return value
@@ -67,7 +67,7 @@ func (e *element) css(w io.Writer, prefix, previous string) {
 		for i, n := range e.names {
 			pref, name := resolveAmpersand(prefix, previous, n)
 			fmt.Fprint(w, pref)
-			if len(pref) > 0 {
+			if len(strings.TrimSpace(pref)) > 0 {
 				fmt.Fprint(w, " ")
 			}
 			fmt.Fprint(w, name)
@@ -76,16 +76,26 @@ func (e *element) css(w io.Writer, prefix, previous string) {
 			}
 		}
 		fmt.Fprintln(w, " {")
-		for _, n := range sortedRange(e.properties) {
-			fmt.Fprintf(w, "\t%s: %s;\n", n, e.properties[n])
+		t := ""
+		if prefix == "\t" {
+			t = "\t"
 		}
-		fmt.Fprintln(w, "}")
+		for _, n := range sortedRange(e.properties) {
+			fmt.Fprintf(w, "\t%s%s: %s;\n", t, n, e.properties[n])
+		}
+		fmt.Fprintln(w, t+"}")
 	}
 	if len(e.names) > 0 {
 		for _, n := range e.names {
 			for _, c := range e.children {
-				pref, name := resolveAmpersand(prefix, previous, n)
-				c.css(w, pref, name)
+				if strings.HasPrefix(n, "@media") {
+					fmt.Fprintln(w, n, " {")
+					c.css(w, "\t", "")
+					fmt.Fprintln(w, "}")
+				} else {
+					pref, name := resolveAmpersand(prefix, previous, n)
+					c.css(w, pref, name)
+				}
 			}
 		}
 	} else {

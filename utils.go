@@ -10,6 +10,7 @@ const (
 	l_property
 	l_variable
 	l_comment
+	l_media
 )
 
 func calcIndentLevel(s string) int {
@@ -31,7 +32,7 @@ func decideLineType(s string) int {
 		return l_comment
 	} else if strings.HasPrefix(s, "$") && strings.Contains(s, ":") {
 		return l_variable
-	} else if !strings.HasPrefix(s, "&") && strings.Contains(s, ":") {
+	} else if !strings.HasPrefix(s, "&") && !strings.HasPrefix(s, "@") && strings.Contains(s, ":") {
 		return l_property
 	} else {
 		return l_element
@@ -42,7 +43,7 @@ func resolveAmpersand(prefix, previous, currname string) (pref, name string) {
 	pref = prefix
 	name = strings.Replace(currname, "&", previous, -1)
 	if name == currname {
-		if len(pref) > 0 {
+		if len(strings.TrimSpace(pref)) > 0 {
 			pref += " "
 		}
 		pref += previous
