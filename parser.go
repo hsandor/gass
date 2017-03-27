@@ -65,12 +65,12 @@ func (p *parser) parseLine(line string) error {
 		ltype := decideLineType(l)
 		if ltype == l_comment {
 			p.comment = indent
-		} else if p.comment > 0 {
-			if indent <= p.comment {
-				p.comment = 0
+			if p.comment <= 0 {
+				p.comment = 1
 			}
+		} else if p.comment > 0 && indent <= p.comment {
+			p.comment = 0
 		}
-
 		if p.comment <= 0 {
 			l = stripLineComments(l)
 			if strings.HasSuffix(l, ";") {
@@ -86,7 +86,9 @@ func (p *parser) parseLine(line string) error {
 				if p.list {
 					return errors.New("open list followed by property:" + strconv.Itoa(p.linecnt))
 				}
-				p.parseProperty(l)
+				if err := p.parseProperty(l); err != nil {
+					return err
+				}
 			}
 		}
 	}

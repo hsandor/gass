@@ -32,19 +32,7 @@ func CompileString(src string) (string, error) {
 // during the process. The build argument instruments the function to recompile
 // the source even if it's already up to date (by file modificaton time check).
 func CompileFile(fileName string, build bool) (string, error) {
-	sinfo, err := os.Stat(fileName)
-	if err != nil {
-		return "", err
-	}
-
 	dst := strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".css"
-
-	dinfo, err := os.Stat(dst)
-	if err == nil {
-		if !sinfo.ModTime().After(dinfo.ModTime()) && !build {
-			return dst, nil
-		}
-	}
 
 	fsrc, err := os.Open(fileName)
 	if err != nil {
