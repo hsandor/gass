@@ -16,7 +16,7 @@ var funcs []string = []string{
 
 var rgx = regexp.MustCompile(`\((.*?)\)`)
 
-func GetVariables(str string) string {
+func getVariables(str string) string {
 	rs := rgx.FindStringSubmatch(str)
 
 	if len(rs[1]) <= 0 {
@@ -27,18 +27,18 @@ func GetVariables(str string) string {
 	return rs[1]
 }
 
-func CallFuncByName(funcName, args string) string {
+func callFuncByName(funcName, args string) string {
 	switch funcName {
 	/* STRING */
 	case "to-upper-case":
-		return ToUpperCase(args)
+		return toUpperCase(args)
 	case "to-lower-case":
-		return ToLowerCase(args)
+		return toLowerCase(args)
 	case "str-length":
-		return StrLength(args)
+		return strLength(args)
 	/* NUMBER */
 	case "random":
-		return Random(args)
+		return random(args)
 	}
 
 	return ""
@@ -51,9 +51,9 @@ func callFunctions(e *element, str string) string {
 		}
 
 		// func called!
-		vars := GetVariables(str)
+		vars := getVariables(str)
 		replacable := funcName + "(" + vars + ")"
-		res := CallFuncByName(funcName, vars)
+		res := callFuncByName(funcName, vars)
 		str = strings.Replace(str, replacable, res, 1)
 
 		return str
@@ -65,23 +65,27 @@ func callFunctions(e *element, str string) string {
 /* STRING */
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#str_length-instance_method
-func StrLength(str string) string {
+func strLength(str string) string {
+	if !isGassStr(str) {
+		// error
+	}
+
 	return fmt.Sprintf("%v", len(str))
 }
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#to_upper_case-instance_method
-func ToUpperCase(str string) string {
+func toUpperCase(str string) string {
 	return strings.ToUpper(str)
 }
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#to_lower_case-instance_method
-func ToLowerCase(str string) string {
+func toLowerCase(str string) string {
 	return strings.ToLower(str)
 }
 
 /* NUMBER */
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#random-instance_method
-func Random(str string) string {
+func random(str string) string {
 	return fmt.Sprintf("%v", rand.Intn(2))
 }

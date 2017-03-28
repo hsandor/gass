@@ -86,3 +86,13 @@ func stripLineComments(s string) string {
 	}
 	return s
 }
+
+func isGassStr(str string) bool {
+	if strings.HasPrefix(str, `"`) && strings.HasSuffix(str, `"`) {
+		if strings.Count(str, `"`) == 2 {
+			return true
+		}
+	}
+
+	return false
+}
