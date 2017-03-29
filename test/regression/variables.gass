@@ -2,6 +2,7 @@
 $col-black: #012345
 $col-sky: rgb(1,$col-black,2)
 $apple:apple
+$something: something
 
 nav
 	$something: anything

@@ -48,16 +48,24 @@ func (e *element) addVariable(name, value string) {
 	e.variables[n] = interpolateVariables(e, v)
 }
 
-func (e *element) getVariable(name string) string {
+func (e *element) findVariable(name string) (string, bool) {
 	if e.variables != nil {
 		if value, ok := e.variables[name]; ok {
-			return value
+			return value, true
 		}
 	}
 	if e.parent != nil {
-		return e.parent.getVariable(name)
+		return e.parent.findVariable(name)
 	}
-	return ""
+	return "", false
+}
+
+func (e *element) getVariable(name string) string {
+	value, ok := e.findVariable(name)
+	if !ok {
+		fmt.Println("variable doesn't exists:", name)
+	}
+	return value
 }
 
 func (e *element) css(w io.Writer, prefix, previous string) {

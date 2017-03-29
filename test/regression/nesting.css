@@ -53,5 +53,5 @@ first3.active:hover {
 	border: 1px solid black;
 }
 first3:not(first3.active):hover {
-	border: 1px solid ;
+	border: 1px solid black;
 }

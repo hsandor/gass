@@ -38,6 +38,7 @@ first2
 	color:yellow
 
 first3
+	$var:black
 	color:blue
 
 	&:hover
