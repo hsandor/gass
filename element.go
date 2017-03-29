@@ -7,13 +7,18 @@ import (
 	"strings"
 )
 
+type property struct {
+	name  string
+	value string
+}
+
 type element struct {
 	indent     int
 	level      int
 	parent     *element
 	children   []*element
 	names      []string
-	properties map[string]string
+	properties []property
 	variables  map[string]string
 }
 
@@ -27,18 +32,11 @@ func (e *element) addName(name string) error {
 	return nil
 }
 
-func (e *element) addProperty(name, value string) error {
+func (e *element) addProperty(name, value string) {
 	n := strings.TrimSpace(name)
 	v := strings.TrimSpace(value)
-	if e.properties == nil {
-		e.properties = make(map[string]string)
-	} else {
-		if _, exists := e.properties[n]; exists {
-			return errors.New("property already exists:" + n)
-		}
-	}
-	e.properties[n] = callFunctions(e, interpolateVariables(e, v))
-	return nil
+	v = callFunctions(e, interpolateVariables(e, v))
+	e.properties = append(e.properties, property{n, v})
 }
 
 func (e *element) addVariable(name, value string) {
@@ -80,8 +78,8 @@ func (e *element) css(w io.Writer, prefix, previous string) {
 		if prefix == "\t" {
 			t = "\t"
 		}
-		for _, n := range sortedRange(e.properties) {
-			fmt.Fprintf(w, "\t%s%s: %s;\n", t, n, e.properties[n])
+		for _, p := range e.properties {
+			fmt.Fprintf(w, "\t%s%s: %s;\n", t, p.name, p.value)
 		}
 		fmt.Fprintln(w, t+"}")
 	}

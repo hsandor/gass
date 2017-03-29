@@ -1,17 +1,17 @@
 nav ul {
-	background-color: #012345;
 	everything: anything;
+	background-color: #012345;
 }
 nav li {
-	apple: pear;
 	background-color: rgb(1,#012345,2);
 	everything: anything;
+	apple: pear;
 }
 nav a {
 	apple: apple;
 }
 .users #userTab,
 .posts #postTab {
-	background-color: rgb(1,#012345,2);
 	everything: ;
+	background-color: rgb(1,#012345,2);
 }
