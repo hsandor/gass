@@ -50,7 +50,9 @@ func (p *parser) parseVariable(str string) {
 func (p *parser) parseProperty(str string) error {
 	prop := strings.SplitN(str, ":", 2)
 	if len(prop) == 2 {
-		p.last.addProperty(prop[0], prop[1])
+		if err := p.last.addProperty(prop[0], prop[1]); err != nil {
+			return err
+		}
 		return nil
 	}
 	return errors.New("error in parseProperty:" + str)

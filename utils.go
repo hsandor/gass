@@ -1,6 +1,7 @@
 package gass
 
 import (
+	"errors"
 	"sort"
 	"strings"
 )
@@ -87,12 +88,18 @@ func stripLineComments(s string) string {
 	return s
 }
 
-func isGassStr(str string) bool {
+func isGassStr(str string) (bool, error) {
 	if strings.HasPrefix(str, `"`) && strings.HasSuffix(str, `"`) {
 		if strings.Count(str, `"`) == 2 {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	if strings.HasPrefix(str, `'`) && strings.HasSuffix(str, `'`) {
+		if strings.Count(str, `'`) == 2 {
+			return true, nil
+		}
+	}
+
+	return false, errors.New("parameter is not a valid gass string!")
 }

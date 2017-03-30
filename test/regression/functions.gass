@@ -1,4 +1,4 @@
-$toLowerCase: IWILLBELOWERCASED
+$toLowerCase: "IWILLBELOWERCASED"
 
 .my-class
 	/* it works! */

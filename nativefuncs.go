@@ -27,24 +27,27 @@ func getVariables(str string) string {
 	return rs[1]
 }
 
-func callFuncByName(funcName, args string) string {
+func callFuncByName(funcName, args string) (res string, err error) {
+	res = ""
+	err = nil
+
 	switch funcName {
 	/* STRING */
 	case "to-upper-case":
-		return toUpperCase(args)
+		res, err = toUpperCase(args)
 	case "to-lower-case":
-		return toLowerCase(args)
+		res, err = toLowerCase(args)
 	case "str-length":
-		return strLength(args)
+		res, err = strLength(args)
 	/* NUMBER */
 	case "random":
-		return random(args)
+		res, err = random(args)
 	}
 
-	return ""
+	return res, err
 }
 
-func callFunctions(e *element, str string) string {
+func callFunctions(e *element, str string) (string, error) {
 	for _, funcName := range funcs {
 		if !strings.Contains(str, funcName) {
 			continue
@@ -53,39 +56,52 @@ func callFunctions(e *element, str string) string {
 		// func called!
 		vars := getVariables(str)
 		replacable := funcName + "(" + vars + ")"
-		res := callFuncByName(funcName, vars)
+		res, err := callFuncByName(funcName, vars)
+
+		if err != nil {
+			return str, err
+		}
+
 		str = strings.Replace(str, replacable, res, 1)
 
-		return str
+		return str, nil
 	}
 
-	return str
+	return str, nil
 }
 
 /* STRING */
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#str_length-instance_method
-func strLength(str string) string {
-	if !isGassStr(str) {
-		// error
+func strLength(str string) (string, error) {
+	if _, err := isGassStr(str); err != nil {
+		return str, err
 	}
 
-	return fmt.Sprintf("%v", len(str))
+	return fmt.Sprintf("%v", len(str)), nil
 }
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#to_upper_case-instance_method
-func toUpperCase(str string) string {
-	return strings.ToUpper(str)
+func toUpperCase(str string) (string, error) {
+	if _, err := isGassStr(str); err != nil {
+		return str, err
+	}
+
+	return strings.ToUpper(str), nil
 }
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#to_lower_case-instance_method
-func toLowerCase(str string) string {
-	return strings.ToLower(str)
+func toLowerCase(str string) (string, error) {
+	if _, err := isGassStr(str); err != nil {
+		return str, err
+	}
+
+	return strings.ToLower(str), nil
 }
 
 /* NUMBER */
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#random-instance_method
-func random(str string) string {
-	return fmt.Sprintf("%v", rand.Intn(2))
+func random(str string) (string, error) {
+	return fmt.Sprintf("%v", rand.Intn(2)), nil
 }

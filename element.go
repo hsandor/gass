@@ -32,11 +32,17 @@ func (e *element) addName(name string) error {
 	return nil
 }
 
-func (e *element) addProperty(name, value string) {
+func (e *element) addProperty(name, value string) error {
 	n := strings.TrimSpace(name)
 	v := strings.TrimSpace(value)
-	v = callFunctions(e, interpolateVariables(e, v))
+	v, err := callFunctions(e, interpolateVariables(e, v))
+
+	if err != nil {
+		return err
+	}
+
 	e.properties = append(e.properties, property{n, v})
+	return nil
 }
 
 func (e *element) addVariable(name, value string) {
