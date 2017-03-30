@@ -45,13 +45,16 @@ func (e *element) addProperty(name, value string) error {
 	return nil
 }
 
-func (e *element) addVariable(name, value string) {
-	n := strings.TrimSpace(name)
-	v := strings.TrimSpace(value)
+func (e *element) addVariable(name, value string, nodef bool) {
+	if nodef {
+		if _, ok := e.findVariable(name); ok {
+			return
+		}
+	}
 	if e.variables == nil {
 		e.variables = make(map[string]string)
 	}
-	e.variables[n] = interpolateVariables(e, v)
+	e.variables[name] = interpolateVariables(e, value)
 }
 
 func (e *element) findVariable(name string) (string, bool) {

@@ -1,0 +1,15 @@
+$c-back: white
+
+body
+	$c-back: black !default
+	background-color:$c-back
+
+
+
+nav
+	$c-fore: red !default
+    ul
+		color:$c-back
+		$c-back: green
+        margin: $c-fore
+		background-color:$c-back

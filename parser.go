@@ -44,7 +44,12 @@ func (p *parser) parseVariable(str string) {
 	s := str[strings.Index(str, "$")+1:]
 	n := strings.TrimSpace(s[:strings.Index(s, ":")])
 	v := strings.TrimSpace(s[strings.Index(s, ":")+1:])
-	p.last.addVariable(n, v)
+	d := false
+	if strings.HasSuffix(v, "!default") {
+		v = strings.TrimSpace(v[:len(v)-8])
+		d = true
+	}
+	p.last.addVariable(n, v, d)
 }
 
 func (p *parser) parseProperty(str string) error {
