@@ -121,31 +121,6 @@ func (e *element) css(w io.Writer, prefix, previous string) {
 	return
 }
 
-func (e *element) gass(w io.Writer) {
-	if len(e.names) > 0 {
-		t := strings.Repeat("\t", e.level-1)
-		for i := 0; i < len(e.names); i++ {
-			fmt.Fprint(w, t, e.names[i])
-			if i < len(e.names)-1 {
-				fmt.Fprintln(w, ",")
-			}
-		}
-		fmt.Fprintln(w, "")
-	}
-	if e.properties != nil {
-		t := strings.Repeat("\t", e.level)
-		for n, v := range e.properties {
-			fmt.Fprintf(w, "%s%s:%s\n", t, n, v)
-		}
-		fmt.Println(w, "")
-	}
-	if len(e.children) > 0 {
-		for _, c := range e.children {
-			c.gass(w)
-		}
-	}
-}
-
 func newElement(indent int, parent *element) *element {
 	e := &element{indent: indent, parent: parent}
 	if parent != nil {

@@ -1,0 +1,28 @@
+
+@font-face
+	font-family:LATIN
+	src:url('../font/Ubuntu-Medium.woff') format('woff')
+
+body
+	width:100%
+	height:100%
+	font-size:16px
+	line-height:120%
+	font-family:LATIN
+	direction:ltr
+	overflow:hidden
+
+@media only screen and (min-width:300px)
+	html,
+	body
+		font-size:16px
+
+@media only screen and (min-width:400px)
+	html,
+	body
+		font-size:17px
+
+@media only screen and (min-width:500px)
+	html,
+	body
+		font-size:18px
