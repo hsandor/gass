@@ -3,11 +3,13 @@ $toLowerCase: "IWILLBELOWERCASED"
 .my-class
 	/* it works! */
 	content: to-upper-case('iam uppercased')
-	margin-top: str-length('ez egy hosszú szöveg')px
+	margin-top: str-length('ez egy hosszú szöveg')px	
 	background-image: to-lower-case($toLowerCase)
+
+	multiple: str-length('asdf') + str-length('jkle')
 	
 	/* partially done */
 	padding: random()
 	
 	/* it doesn't */
-	color: get-color('purple')
+	/*color: get-color('purple')*/

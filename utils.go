@@ -94,3 +94,23 @@ func isGassStr(str string) (bool, error) {
 
 	return false, errors.New("parameter is not a valid gass string!")
 }
+
+func arrayOfStrSame(arr []string, str string) (bool, int) {
+	for index, actStr := range arr {
+		if str == actStr {
+			return true, index
+		}
+	}
+
+	return false, -1
+}
+
+func arrayOfStrContains(arr []string, str string) (bool, int) {
+	for index, actStr := range arr {
+		if strings.Contains(str, actStr) {
+			return true, index
+		}
+	}
+
+	return false, -1
+}

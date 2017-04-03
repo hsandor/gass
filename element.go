@@ -35,7 +35,7 @@ func (e *element) addName(name string) error {
 func (e *element) addProperty(name, value string) error {
 	n := strings.TrimSpace(name)
 	v := strings.TrimSpace(value)
-	v, err := callFunctions(e, interpolateVariables(e, v))
+	v, err := callFunctions(interpolateVariables(e, v))
 
 	if err != nil {
 		return err

@@ -3,28 +3,24 @@ package gass
 import (
 	"fmt"
 	"math/rand"
-	"regexp"
 	"strings"
 )
 
-var funcs []string = []string{
+var gassFuncs []string = []string{
 	"str-length",
 	"to-upper-case",
 	"to-lower-case",
 	"random",
 }
 
-var rgx = regexp.MustCompile(`\((.*?)\)`)
-
-func getVariables(str string) string {
-	rs := rgx.FindStringSubmatch(str)
-
-	if len(rs[1]) <= 0 {
-		/*return str*/
-		/* throw error */
-	}
-
-	return rs[1]
+var cssFuncs []string = []string{
+	"attr",
+	"url",
+	"calc",
+	"linear-gradient",
+	"radial-gradient",
+	"repeating-linear-gradient",
+	"repeating-radial-gradient",
 }
 
 func callFuncByName(funcName, args string) (res string, err error) {
@@ -47,27 +43,57 @@ func callFuncByName(funcName, args string) (res string, err error) {
 	return res, err
 }
 
-func callFunctions(e *element, str string) (string, error) {
-	for _, funcName := range funcs {
-		if !strings.Contains(str, funcName) {
-			continue
+func callFunctions(str string) (string, error) {
+	openerPos := strings.Index(str, "(")
+	result := str
+
+	if openerPos > -1 && openerPos < len(str) {
+		part := str[0:openerPos]
+
+		hasGassNative, funcIndex := arrayOfStrContains(gassFuncs, part)
+
+		// got a gass native function
+		if hasGassNative {
+			funcName := gassFuncs[funcIndex]
+			funcPlaceIndex := strings.Index(part, funcName)
+
+			result = str[0:funcPlaceIndex] // leave it
+
+			closerPos := strings.Index(str, ")")
+
+			if closerPos <= -1 {
+				// throw error
+				fmt.Println("Error: " + string(closerPos))
+			}
+
+			// collect the variables
+			variables := str[openerPos+1 : closerPos]
+
+			// get the result by function name and the variables
+			res, err := callFuncByName(funcName, variables)
+
+			if err == nil {
+				result = result + res
+			} else {
+				fmt.Println("HIBA 2")
+			}
+
+			// content still remains
+			if closerPos < len(str) {
+				remains := str[closerPos+1 : len(str)]
+
+				fmt.Println(remains)
+
+				res, err := callFunctions(remains)
+
+				if err == nil {
+					result = result + res
+				}
+			}
 		}
-
-		// func called!
-		vars := getVariables(str)
-		replacable := funcName + "(" + vars + ")"
-		res, err := callFuncByName(funcName, vars)
-
-		if err != nil {
-			return str, err
-		}
-
-		str = strings.Replace(str, replacable, res, 1)
-
-		return str, nil
 	}
 
-	return str, nil
+	return result, nil
 }
 
 /* STRING */
