@@ -28,6 +28,7 @@ var cssFuncs []string = []string{
 	"cubic-bezier",
 	"drop-shadow",
 	"ellipse",
+	"format",
 	"grayscale",
 	"hsl",
 	"hsla",
@@ -116,21 +117,21 @@ func callFunctions(str string) (string, error) {
 				fmt.Println("Error: " + string(closerPos))
 			}
 
-			// collect the variables
-			variables := str[openerPos+1 : closerPos]
+			// collect the arguments
+			arguments := str[openerPos+1 : closerPos]
 
-			if strings.Contains(variables, "(") {
+			if strings.Contains(arguments, "(") {
 				vars := str[openerPos+1 : closerPos+1]
 
 				res, err := callFunctions(vars)
 
 				if err == nil {
-					variables = res
+					arguments = res
 				}
 			}
 
-			// get the result by function name and the variables
-			res, err := callFuncByName(funcName, variables)
+			// get the result by function name and the arguments
+			res, err := callFuncByName(funcName, arguments)
 
 			if err == nil {
 				result = result + res
@@ -151,13 +152,19 @@ func callFunctions(str string) (string, error) {
 				}
 			}
 		} else if isCssNative, _ := arrayOfStrContains(cssFuncs, part); isCssNative {
-			meh := str[len(part)+1 : len(str)]
+			nativeArgs := str[len(part)+1 : len(str)]
 
-			if strings.Contains(meh, "(") {
-				res, err := callFunctions(meh)
+			if strings.Contains(nativeArgs, "(") {
+				res, err := callFunctions(nativeArgs)
 
 				if err == nil {
-					result = part + "(" + res + ")"
+					result = part + "(" + res
+
+					if !strings.HasSuffix(result, ")") {
+						result = result + ")"
+					}
+				} else {
+					return result, err
 				}
 			}
 		}
