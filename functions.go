@@ -83,6 +83,8 @@ func callFuncByName(funcName, args string) (res string, err error) {
 	/* STRING */
 	case "unquote":
 		res, err = unquote(args)
+	case "quote":
+		res = quote(args)
 	case "to-upper-case":
 		res, err = toUpperCase(args)
 	case "to-lower-case":
@@ -103,6 +105,8 @@ func callFunctions(str string) (string, error) {
 	openerPos := strings.Index(str, "(")
 	result := str
 
+	// fmt.Println(result)
+
 	if openerPos > -1 && openerPos < len(str) {
 		part := str[0:openerPos]
 
@@ -119,7 +123,7 @@ func callFunctions(str string) (string, error) {
 
 			if closerPos <= -1 {
 				// throw error
-				fmt.Println("Error: " + string(closerPos))
+				fmt.Println("HIBA_HIBA_HIBA")
 			}
 
 			// collect the arguments
@@ -132,6 +136,8 @@ func callFunctions(str string) (string, error) {
 
 				if err == nil {
 					arguments = res
+				} else {
+					return "", err
 				}
 			}
 
@@ -141,7 +147,7 @@ func callFunctions(str string) (string, error) {
 			if err == nil {
 				result = result + res
 			} else {
-				return result, err
+				return "", err
 			}
 
 			// content still remains
@@ -153,6 +159,8 @@ func callFunctions(str string) (string, error) {
 
 					if err == nil {
 						result = result + res
+					} else {
+						return "", err
 					}
 				}
 			}
@@ -169,7 +177,7 @@ func callFunctions(str string) (string, error) {
 						result = result + ")"
 					}
 				} else {
-					return result, err
+					return "", err
 				}
 			}
 		} else {
@@ -192,12 +200,12 @@ func unquote(str string) (string, error) {
 }
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#quote-instance_method
-func quote(str string) (string, error) {
+func quote(str string) string {
 	if _, err := isGassStr(str); err == nil {
-		return str, nil // this time it's not an error
+		return str // this time it's not an error
 	}
 
-	return `"` + str + `"`, nil
+	return `"` + str + `"`
 }
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#str_index-instance_method
