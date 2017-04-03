@@ -1,6 +1,7 @@
 package gass
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -9,7 +10,9 @@ import (
 
 var gassFuncs []string = []string{
 	"unquote",
+	"quote",
 	"str-length",
+	"str-index",
 	"to-upper-case",
 	"to-lower-case",
 	"random",
@@ -89,6 +92,8 @@ func callFuncByName(funcName, args string) (res string, err error) {
 	/* NUMBER */
 	case "random":
 		res, err = random(args)
+	default:
+		return res, errors.New("gass native function is not in callFuncByName: " + funcName)
 	}
 
 	return res, err
@@ -167,6 +172,8 @@ func callFunctions(str string) (string, error) {
 					return result, err
 				}
 			}
+		} else {
+			return result, errors.New("function is not found: " + part)
 		}
 	}
 
@@ -184,13 +191,35 @@ func unquote(str string) (string, error) {
 	return strings.Replace(strings.Replace(str, `"`, ``, -1), `'`, ``, -1), nil
 }
 
+// http://sass-lang.com/documentation/Sass/Script/Functions.html#quote-instance_method
+func quote(str string) (string, error) {
+	if _, err := isGassStr(str); err == nil {
+		return str, nil // this time it's not an error
+	}
+
+	return `"` + str + `"`, nil
+}
+
+// http://sass-lang.com/documentation/Sass/Script/Functions.html#str_index-instance_method
+func strIndex(str, sep string) string {
+	index := strings.Index(str, sep)
+
+	if index > -1 {
+		// Note that unlike some languages, the first character in a Sass string is number 1, the second number 2, and so forth.
+		return intToStr(index + 1)
+	}
+
+	// If there is no such occurrence, returns null.
+	return "null"
+}
+
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#str_length-instance_method
 func strLength(str string) (string, error) {
 	if _, err := isGassStr(str); err != nil {
 		return str, err
 	}
 
-	return fmt.Sprintf("%v", len(str)), nil
+	return intToStr(len(str)), nil
 }
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#to_upper_case-instance_method
@@ -224,8 +253,8 @@ func random(str string) (string, error) {
 			return "", err
 		}
 
-		return fmt.Sprintf("%v", rand.Intn(int(i))), nil
+		return intToStr(rand.Intn(int(i))), nil
 	}
 
-	return fmt.Sprintf("%v", rand.Intn(num)), nil
+	return intToStr(rand.Intn(num)), nil
 }

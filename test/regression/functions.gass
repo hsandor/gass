@@ -4,7 +4,7 @@ $toLowerCase: "IWILLBELOWERCASED"
 	/* it works! */
 	content: to-upper-case('iam uppercased')
 	margin-top: str-length('ez egy hosszú szöveg')px	
-	background-image: to-lower-case($toLowerCase)
+	background-image: to-lower-case($toLowerCase)	
 
     /* multiple funcs in one row */
 	multiple: str-length('asdf') + str-length('jkle')
