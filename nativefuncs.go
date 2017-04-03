@@ -3,24 +3,72 @@ package gass
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 )
 
 var gassFuncs []string = []string{
+	"unquote",
 	"str-length",
 	"to-upper-case",
 	"to-lower-case",
 	"random",
 }
 
+// http://www.quackit.com/css/functions/
 var cssFuncs []string = []string{
 	"attr",
-	"url",
+	"blur",
+	"brightness",
 	"calc",
+	"circle",
+	"contrast",
+	"counter",
+	"counters",
+	"cubic-bezier",
+	"drop-shadow",
+	"ellipse",
+	"grayscale",
+	"hsl",
+	"hsla",
+	"hue-rotate",
+	"hwb",
+	"image",
+	"inset",
+	"invert",
 	"linear-gradient",
+	"matrix",
+	"matrix3d",
+	"opacity",
+	"perspective",
+	"polygon",
 	"radial-gradient",
 	"repeating-linear-gradient",
 	"repeating-radial-gradient",
+	"rgb",
+	"rgba",
+	"rotate",
+	"rotate3d",
+	"rotateX",
+	"rotateY",
+	"rotateZ",
+	"saturate",
+	"sepia",
+	"scale",
+	"scale3d",
+	"scaleX",
+	"scaleY",
+	"scaleZ",
+	"skew",
+	"skewX",
+	"skewY",
+	"symbols",
+	"translate",
+	"translate3d",
+	"translateX",
+	"translateY",
+	"translateZ",
+	"url",
 }
 
 func callFuncByName(funcName, args string) (res string, err error) {
@@ -29,6 +77,8 @@ func callFuncByName(funcName, args string) (res string, err error) {
 
 	switch funcName {
 	/* STRING */
+	case "unquote":
+		res, err = unquote(args)
 	case "to-upper-case":
 		res, err = toUpperCase(args)
 	case "to-lower-case":
@@ -50,10 +100,10 @@ func callFunctions(str string) (string, error) {
 	if openerPos > -1 && openerPos < len(str) {
 		part := str[0:openerPos]
 
-		hasGassNative, funcIndex := arrayOfStrContains(gassFuncs, part)
+		isGassNative, funcIndex := arrayOfStrContains(gassFuncs, part)
 
 		// got a gass native function
-		if hasGassNative {
+		if isGassNative {
 			funcName := gassFuncs[funcIndex]
 			funcPlaceIndex := strings.Index(part, funcName)
 
@@ -69,25 +119,45 @@ func callFunctions(str string) (string, error) {
 			// collect the variables
 			variables := str[openerPos+1 : closerPos]
 
+			if strings.Contains(variables, "(") {
+				vars := str[openerPos+1 : closerPos+1]
+
+				res, err := callFunctions(vars)
+
+				if err == nil {
+					variables = res
+				}
+			}
+
 			// get the result by function name and the variables
 			res, err := callFuncByName(funcName, variables)
 
 			if err == nil {
 				result = result + res
 			} else {
-				fmt.Println("HIBA 2")
+				return result, err
 			}
 
 			// content still remains
 			if closerPos < len(str) {
 				remains := str[closerPos+1 : len(str)]
 
-				fmt.Println(remains)
+				if remains != ")" {
+					res, err := callFunctions(remains)
 
-				res, err := callFunctions(remains)
+					if err == nil {
+						result = result + res
+					}
+				}
+			}
+		} else if isCssNative, _ := arrayOfStrContains(cssFuncs, part); isCssNative {
+			meh := str[len(part)+1 : len(str)]
+
+			if strings.Contains(meh, "(") {
+				res, err := callFunctions(meh)
 
 				if err == nil {
-					result = result + res
+					result = part + "(" + res + ")"
 				}
 			}
 		}
@@ -97,6 +167,15 @@ func callFunctions(str string) (string, error) {
 }
 
 /* STRING */
+
+// http://sass-lang.com/documentation/Sass/Script/Functions.html#unquote-instance_method
+func unquote(str string) (string, error) {
+	if _, err := isGassStr(str); err != nil {
+		return str, err
+	}
+
+	return strings.Replace(strings.Replace(str, `"`, ``, -1), `'`, ``, -1), nil
+}
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#str_length-instance_method
 func strLength(str string) (string, error) {
@@ -129,5 +208,17 @@ func toLowerCase(str string) (string, error) {
 
 // http://sass-lang.com/documentation/Sass/Script/Functions.html#random-instance_method
 func random(str string) (string, error) {
-	return fmt.Sprintf("%v", rand.Intn(2)), nil
+	num := 1
+
+	if len(strings.TrimSpace(str)) > 0 {
+		i, err := strconv.ParseInt(str, 10, 8)
+
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprintf("%v", rand.Intn(int(i))), nil
+	}
+
+	return fmt.Sprintf("%v", rand.Intn(num)), nil
 }

@@ -2,5 +2,7 @@
 	content: 'IAM UPPERCASED';
 	margin-top: 24px;
 	background-image: "iwillbelowercased";
-	padding: 1;	
+	composition: UNQUOTED_AND_UPPERCASED;
+	border: calc(100% - 20px);
+	padding: 0;
 }

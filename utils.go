@@ -92,7 +92,7 @@ func isGassStr(str string) (bool, error) {
 		}
 	}
 
-	return false, errors.New("parameter is not a valid gass string!")
+	return false, errors.New("parameter is not a valid gass string: " + str)
 }
 
 func arrayOfStrSame(arr []string, str string) (bool, int) {
