@@ -6,9 +6,12 @@ import (
 	"io"
 	"strconv"
 	"strings"
+
+	"./line"
 )
 
 type parser struct {
+	line    *line.Line
 	root    *element
 	parent  *element
 	last    *element
@@ -64,10 +67,12 @@ func (p *parser) parseProperty(str string) error {
 }
 
 func (p *parser) parseLine(line string) error {
+	p.line.Parse(line)
+
 	p.linecnt++
-	l := strings.TrimSpace(line)
+	l := p.line.Text
 	if len(l) > 0 {
-		indent := calcIndentLevel(line)
+		indent := p.line.Indent
 		ltype := decideLineType(l)
 		if ltype == l_comment {
 			p.comment = indent
@@ -117,5 +122,6 @@ func newParser() *parser {
 	p.root = newElement(-1, nil)
 	p.parent = p.root
 	p.last = p.root
+	p.line = new(line.Line)
 	return p
 }

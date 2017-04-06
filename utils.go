@@ -14,20 +14,6 @@ const (
 	l_media
 )
 
-func calcIndentLevel(s string) int {
-	i := 0
-	for _, c := range s {
-		if c == 32 {
-			i += 1
-		} else if c == 9 {
-			i = ((i + 8) / 8) * 8
-		} else if c != 13 {
-			break
-		}
-	}
-	return i
-}
-
 func decideLineType(s string) int {
 	if strings.HasPrefix(s, "//") || strings.HasPrefix(s, "/*") {
 		return l_comment
@@ -109,4 +95,18 @@ func arrayOfStrContains(arr []string, str string) (bool, int) {
 // http://stackoverflow.com/questions/39442167/convert-int32-to-string-in-golang
 func intToStr(n int) string {
 	return fmt.Sprint(n)
+}
+
+func strSlice(str string, from, to int) (string, error) {
+	l := len(str)
+
+	if from > to || from < 0 || from > l {
+		return "", errors.New("strSlice error: `from` is " + intToStr(from) + " `to` is " + intToStr(to) + " in " + str)
+	}
+
+	if to < from || to <= 0 || to > l {
+		return "", errors.New("strSlice error: `from` is " + intToStr(from) + " `to` is " + intToStr(to) + " in `" + str + "`")
+	}
+
+	return str[from:to], nil
 }

@@ -13,8 +13,8 @@ $toLowerCase: "IWILLBELOWERCASED"
 	composition: unquote(to-upper-case("unquoted_and_uppercased"))	
 	
 	/* composition bugs */
-	composition_bug1: unquote(to-upper-case("unquoted_and_uppercased")) + calc(50px + 50px)
-	composition_bug2: quote(to-lower-case('APRÓCSKA KALAPOCSKA') + calc(50px + 50px))
+	composition_bug1: unquote(to-upper-case("unquoted_and_uppercased"))
+	composition_bug2: to-lower-case(quote(APRÓCSKA KALAPOCSKA) + calc(50PX + 50PX))
 	
 	/* with css functions */
 	border: calc(100% - unquote("20px")) 

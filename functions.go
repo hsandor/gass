@@ -2,7 +2,6 @@ package gass
 
 import (
 	"errors"
-	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -122,12 +121,16 @@ func callFunctions(str string) (string, error) {
 			closerPos := strings.Index(str, ")")
 
 			if closerPos <= -1 {
-				// throw error
-				fmt.Println("HIBA_HIBA_HIBA")
+				return "", errors.New("No closer in: " + str)
 			}
 
 			// collect the arguments
-			arguments := str[openerPos+1 : closerPos]
+			// arguments := str[openerPos+1 : closerPos]
+			arguments, sliceErr := strSlice(str, openerPos+1, closerPos)
+
+			if sliceErr != nil {
+				return "", sliceErr
+			}
 
 			if strings.Contains(arguments, "(") {
 				vars := str[openerPos+1 : closerPos+1]
@@ -174,7 +177,7 @@ func callFunctions(str string) (string, error) {
 					result = part + "(" + res
 
 					if !strings.HasSuffix(result, ")") {
-						result = result + ")"
+						// result = result + ")"
 					}
 				} else {
 					return "", err
